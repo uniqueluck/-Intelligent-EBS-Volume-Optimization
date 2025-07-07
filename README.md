@@ -168,21 +168,21 @@ Trigger your workflow daily at **6:00 AM IST**.
 ### ✅ Step 8: Test the Workflow
 1. Run a manual execution of the Step Function
 
-   ![Step Function Execution](images/step-function-execution.png)
+![Step Function Execution](images/step-function-execution.png)
 2. Observe logs in:
    - **DynamoDB**
- ![dynamodb-table](images/dynamodb-table.png)
+![dynamodb-table](images/dynamodb-table.png)
      
    - **SNS (Email Notification)**
-      ![ebs_volume_converted_email](images/ebs_volume_converted_email.png)
+![ebs_volume_converted_email](images/ebs_volume_converted_email.png)
 
    - **Convert Volume gp2 to gp3**
      
 ![ebs_volume_converted_email](images/gp3.png)
 
    - **CloudWatch Logs**
-    ![cloudwatch_log_gr](images/cloudwatch_log_group.png)
-    ![cloudwatch_log_group](images/event_log.png)
+![cloudwatch_log_gr](images/cloudwatch_log_group.png)
+![cloudwatch_log_group](images/event_log.png)
 
 
 
