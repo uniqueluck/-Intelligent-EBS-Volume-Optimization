@@ -30,7 +30,9 @@ Before starting, ensure you have:
 - ✅ At least one **gp2 volume** attached to your EC2 (so Lambda can find and convert it)
 - ✅ AWS CLI configured (optional, for testing)  
 
-### 📦 Create EC2 Instance with gp2 Volume
+## 🚀 Step-by-Step Guide
+
+### ✅ Step 1 Create EC2 Instance with gp2 Volume
 1. Go to **EC2 → Launch Instance**
    - Name: `EBS-Test-Instance`
    - AMI: Amazon Linux 2
@@ -62,44 +64,93 @@ If your EC2 was created with gp3:
 
 ---
 
-## 🚀 Step-by-Step Guide
-
-### ✅ Step 0: Prepare EC2 and gp2 Volume
-Before proceeding, ensure your EC2 instance has a gp2 volume attached. If not, follow the **Setup** section above.
-
----
-
-### ✅ Step 1: Create IAM Role for Lambda
-... *(steps continue as before)*
-
----
-
-### ✅ Step 8: Verify Conversion
-Once the Lambda executes successfully, check your volumes:  
-- The gp2 volume should now be **gp3**.  
+### ✅ Step 2: Create IAM Role for Lambda
+1. Go to AWS Console → **IAM → Roles → Create Role**
+2. Select **AWS Service** → Choose **Lambda** → Next
+3. Attach the following policies:
+   - `AmazonEC2FullAccess`
+   - `AmazonDynamoDBFullAccess`
+   - `AmazonSNSFullAccess`
+   - `CloudWatchLogsFullAccess`
+4. Name it: `LambdaEBSConversionRole`
+5. Click **Create Role**
 
 📸 *Screenshot:*  
-![gp3 Volume](images/gp3-volume.png)
+![Create IAM Role](images/iam-role.png)
 
 ---
 
-## 📸 Additional Screenshots
-- **EC2 Instance with gp2 Volume**  
-  ![EC2 Instance](images/ec2-instance.png)
-- **Created gp2 Volume**  
-  ![gp2 Volume](images/create-gp2-volume.png)
-- **Volume Attached to EC2**  
-  ![Attach Volume](images/attach-volume.png)
-- **After Conversion - gp3 Volume**  
-  ![gp3 Volume](images/gp3-volume.png)
-- **Step Function Execution**  
-  ![Step Function Execution](images/step-function-execution.png)
-- **DynamoDB Log Entries**  
-  ![DynamoDB Logs](images/dynamodb-logs.png)
-- **SNS Notification Email**  
-  ![SNS Notification](images/sns-notification.png)
-- **CloudWatch Logs**  
-  ![CloudWatch Logs](images/cloudwatch-logs.png)
+### ✅ Step 3: Create DynamoDB Table
+1. Go to **DynamoDB → Tables → Create Table**
+2. Table name: `EBSConversionLogs`
+3. Partition key: `VolumeId` (String)
+4. Keep other defaults → Click **Create**
+
+📸 *Screenshot:*  
+![DynamoDB Table](images/dynamodb-table.png)
+
+---
+
+### ✅ Step 4: Create SNS Topic
+1. Go to **SNS → Topics → Create Topic**
+2. Type: Standard
+3. Name: `EBSVolumeConverted`
+4. Create a Subscription:
+   - Protocol: Email
+   - Endpoint: *Your Email*
+5. Confirm the email subscription (check your inbox)
+
+📸 *Screenshot:*  
+![SNS Topic](images/sns-topic.png)
+
+---
+
+### ✅ Step 5: Create Lambda Function
+1. Go to **Lambda → Create Function**
+2. Name: `ConvertEBSVolume`
+3. Runtime: Python 3.9
+4. Attach the IAM Role: `LambdaEBSConversionRole`
+5. Paste the Python code from [lambda_function.py](lambda_function.py)
+6. Click **Deploy**
+
+📸 *Screenshot:*  
+![Lambda Function](images/lambda-function.png)
+
+---
+
+### ✅ Step 6: Create Step Function
+1. Go to **Step Functions → Create State Machine**
+2. Type: Standard
+3. Name: `EBSConversionWorkflow`
+4. Paste the JSON definition from [state_machine_definition.json](state_machine_definition.json)
+5. Set the Lambda function ARN in the definition
+6. Click **Create**
+
+📸 *Screenshot:*  
+![Step Function](images/step-function.png)
+
+---
+
+### ✅ Step 7: Test the Workflow
+1. Run a manual execution of the Step Function
+2. Observe logs in:
+   - **DynamoDB**
+   - **SNS (Email Notification)**
+   - **CloudWatch Logs**
+
+📸 *Screenshot:*  
+![Step Function Execution](images/step-function-execution.png)
+
+---
+
+### ✅ Step 8: Automate with CloudWatch
+1. Go to **CloudWatch → Rules → Create Rule**
+2. Trigger: Schedule Expression (cron: `0 6 * * ? *` → daily at 6 AM)
+3. Target: Your Step Function
+4. Click **Create Rule**
+
+📸 *Screenshot:*  
+![CloudWatch Rule](images/cloudwatch-rule.png)
 
 ---
 
@@ -107,13 +158,16 @@ Once the Lambda executes successfully, check your volumes:
 - ✅ Architecture Diagram
 - ✅ Lambda Code ([lambda_function.py](lambda_function.py))
 - ✅ Step Function Definition ([state_machine_definition.json](state_machine_definition.json))
-- ✅ Screenshots (listed above)
+- ✅ Screenshots
 - ✅ Technical Report ([report.docx](report.docx))
 
 ---
 
 ## 🔒 Security Best Practices
-... *(same as before)*
+- IAM roles with least privilege
+- No wildcard (`*`) permissions
+- SNS subscriptions require confirmation
+- CloudWatch logs encrypted
 
 ---
 
@@ -125,17 +179,28 @@ Once the Lambda executes successfully, check your volumes:
 ├── report.docx
 ├── images/
 │   ├── architecture.png
-│   ├── ec2-instance.png
-│   ├── create-gp2-volume.png
-│   ├── attach-volume.png
-│   ├── gp3-volume.png
-│   ├── dynamodb-logs.png
-│   ├── sns-notification.png
-│   ├── cloudwatch-logs.png
+│   ├── iam-role.png
+│   ├── dynamodb-table.png
+│   ├── sns-topic.png
+│   ├── lambda-function.png
+│   ├── step-function.png
+│   ├── step-function-execution.png
+│   └── cloudwatch-rule.png
 └── README.md
 ```
 
 ---
 
 ## 📧 Contact
-For queries or collaboration, contact: [your-email@example.com](mailto:your-email@example.com)
+For queries, collaboration, or to connect professionally:
+
+🔗 [**LinkedIn: Bhagyashri Bobade**](https://www.linkedin.com/in/bhagyashribobade)
+
+
+
+---
+
+
+
+
+
