@@ -1,0 +1,86 @@
+import boto3
+from datetime import datetime
+
+ec2 = boto3.client('ec2')
+dynamo = boto3.resource('dynamodb')
+sns = boto3.client('sns')
+
+# Replace with your actual resources
+table = dynamo.Table('EBSConversionLogs')
+sns_topic = 'arn:aws:<your-region>:<your-account-id>:EBSVolumeConverted'
+
+def lambda_handler(event, context):
+    try:
+        volumes = ec2.describe_volumes(
+            Filters=[
+                {'Name': 'volume-type', 'Values': ['gp2']},
+                {'Name': 'tag:AutoConvert', 'Values': ['true']}
+            ]
+        )
+
+        if not volumes['Volumes']:
+            print("No matching volumes found.")
+            return {
+                'statusCode': 200,
+                'body': 'No gp2 volumes with AutoConvert=true found.'
+            }
+
+        for volume in volumes['Volumes']:
+            vol_id = volume['VolumeId']
+            attachments = volume.get('Attachments', [])
+
+            if not attachments:
+                print(f"Volume {vol_id} is not attached. Skipping.")
+                continue
+
+            instance_id = attachments[0]['InstanceId']
+            size = volume['Size']
+            region = ec2.meta.region_name
+
+            # Check if already being modified
+            try:
+                mod_status = ec2.describe_volumes_modifications(VolumeIds=[vol_id])
+                if mod_status['VolumesModifications']:
+                    state = mod_status['VolumesModifications'][0]['ModificationState']
+                    if state not in ['completed', 'failed']:
+                        print(f"Volume {vol_id} is in '{state}' state. Skipping.")
+                        continue
+            except Exception as e:
+                # No modification history — safe to continue
+                print(f"No previous modification for {vol_id}, continuing.")
+
+            # Modify to gp3
+            ec2.modify_volume(
+                VolumeId=vol_id,
+                VolumeType='gp3'
+            )
+            print(f"Requested modification for volume {vol_id}.")
+
+            # Log to DynamoDB
+            table.put_item(Item={
+                'VolumeId': vol_id,
+                'InstanceId': instance_id,
+                'Size': size,
+                'VolumeType': 'gp3',
+                'Region': region,
+                'Timestamp': datetime.utcnow().isoformat()
+            })
+
+            # Send SNS
+            sns.publish(
+                TopicArn=sns_topic,
+                Subject='EBS Volume Converted',
+                Message=f"Volume {vol_id} attached to {instance_id} converted to gp3 in {region}."
+            )
+
+        return {
+            'statusCode': 200,
+            'body': 'Conversion process completed.'
+        }
+
+    except Exception as e:
+        print(str(e))
+        return {
+            'statusCode': 500,
+            'body': f'Error occurred: {str(e)}'
+        }
