@@ -63,7 +63,7 @@ Before starting, ensure you have:
 4. Verify the instance has a gp2 volume attached.  
 
 📸 *Screenshot:*  
-![Launch EC2 Instance](images/ec2-instance.png)
+![Launch EC2 Instance](images/ec2.png)
 
 ### 📦 (Optional) Create and Attach gp2 Volume
 If your EC2 was created with gp3:  
@@ -76,8 +76,9 @@ If your EC2 was created with gp3:
    - Choose your EC2 instance
 
 📸 *Screenshot:*  
-![Create gp2 Volume](images/create-gp2-volume.png)  
-![Attach Volume](images/attach-volume.png)
+![Launch EC2 volume](images/ec2_volume.png)
+  
+
 
 ---
 
@@ -104,7 +105,7 @@ If your EC2 was created with gp3:
 4. Keep other defaults → Click **Create**
 
 📸 *Screenshot:*  
-![DynamoDB Table](images/dynamodb-table.png)
+![DynamoDB Table](images/table_dynamodb.png)
 
 ---
 
@@ -144,7 +145,7 @@ If your EC2 was created with gp3:
 6. Click **Create**
 
 📸 *Screenshot:*  
-![Step Function](images/step-function.png)
+![Step Function](images/step_function_creat.png)
 
 ---
 
@@ -162,7 +163,7 @@ Trigger your workflow daily at **6:00 AM IST**.
 6. Create schedule  
 
 📸 *Screenshot:*  
-![eventbridge](images/eventbridge.png)
+![eventbridge](images/eventbridge_cron.png)
 
 ### ✅ Step 8: Test the Workflow
 1. Run a manual execution of the Step Function
