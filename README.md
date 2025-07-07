@@ -170,17 +170,22 @@ Trigger your workflow daily at **6:00 AM IST**.
 
 ![Step Function Execution](images/step-function-execution.png)
 2. Observe logs in:
-   - **DynamoDB**
+
+ - **DynamoDB**
+
 ![dynamodb-table](images/dynamodb-table.png)
      
-   - **SNS (Email Notification)**
+ - **SNS (Email Notification)**
+
 ![ebs_volume_converted_email](images/ebs_volume_converted_email.png)
 
-   - **Convert Volume gp2 to gp3**
+- **Convert Volume gp2 to gp3**
      
+
 ![ebs_volume_converted_email](images/gp3.png)
 
-   - **CloudWatch Logs**
+- **CloudWatch Logs**
+
 
 ![cloudwatch_log_gr](images/cloudwatch_log_group.png)
 
