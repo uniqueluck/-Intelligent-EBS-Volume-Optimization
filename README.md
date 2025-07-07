@@ -35,6 +35,18 @@ Before starting, ensure you have:
 ![Architecture Diagram](images/architecture.png)
 
 
+## 📦 Components Used
+
+| Component        | Purpose                                        |
+|------------------|------------------------------------------------|
+| AWS Lambda       | Finds gp2 volumes and converts them to gp3     |
+| Step Functions   | Orchestrates Lambda, DynamoDB, and SNS         |
+| DynamoDB         | Logs all conversion actions for audit          |
+| SNS              | Sends email notifications post conversion      |
+| EventBridge      | Triggers Step Function daily                   |
+| CloudWatch Logs  | Stores Lambda execution logs                   |
+
+
 ## 🚀 Step-by-Step Guide
 
 ### ✅ Step 1 Create EC2 Instance with gp2 Volume
@@ -136,7 +148,23 @@ If your EC2 was created with gp3:
 
 ---
 
-### ✅ Step 7: Test the Workflow
+### ✅ Step 7: Automate with EventBridge Scheduler
+Trigger your workflow daily at **6:00 AM IST**.
+
+📝 Short Instructions:
+1. Go to **EventBridge → Scheduler → Create Schedule**
+2. Name: `DailyEBSConversionTrigger`
+3. Description: Triggers Step Function daily to convert gp2 → gp3
+4. Schedule:
+   - Cron: `cron(30 0 * * ? *)`
+   - (6:00 AM IST = 00:30 UTC)
+5. Target: Your Step Function ARN
+6. Create schedule  
+
+📸 *Screenshot:*  
+![eventbridge](images/eventbridge.png)
+
+### ✅ Step 8: Test the Workflow
 1. Run a manual execution of the Step Function
 2. Observe logs in:
    - **DynamoDB**
@@ -148,23 +176,10 @@ If your EC2 was created with gp3:
 
 ---
 
-### ✅ Step 8: Automate with CloudWatch
-1. Go to **CloudWatch → Rules → Create Rule**
-2. Trigger: Schedule Expression (cron: `0 6 * * ? *` → daily at 6 AM)
-3. Target: Your Step Function
-4. Click **Create Rule**
 
-📸 *Screenshot:*  
-![CloudWatch Rule](images/cloudwatch-rule.png)
 
 ---
 
-## 📜 Deliverables
-- ✅ Architecture Diagram
-- ✅ Lambda Code ([lambda_function.py](lambda_function.py))
-- ✅ Step Function Definition ([state_machine_definition.json](state_machine_definition.json))
-- ✅ Screenshots
-- ✅ Technical Report ([report.docx](report.docx))
 
 ---
 
@@ -176,23 +191,6 @@ If your EC2 was created with gp3:
 
 ---
 
-## 📂 Folder Structure
-```
-.
-├── lambda_function.py
-├── state_machine_definition.json
-├── report.docx
-├── images/
-│   ├── architecture.png
-│   ├── iam-role.png
-│   ├── dynamodb-table.png
-│   ├── sns-topic.png
-│   ├── lambda-function.png
-│   ├── step-function.png
-│   ├── step-function-execution.png
-│   └── cloudwatch-rule.png
-└── README.md
-```
 
 ---
 
