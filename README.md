@@ -179,26 +179,13 @@ Trigger your workflow daily at **6:00 AM IST**.
     ![cloudwatch_log_gr](images/cloudwatch_log_group.png)
     ![cloudwatch_log_group](images/event_log.png)
 
-📸 *Screenshot:*  
 
-
----
-
-
-
----
-
-
----
 
 ## 🔒 Security Best Practices
 - IAM roles with least privilege
 - No wildcard (`*`) permissions
 - SNS subscriptions require confirmation
 - CloudWatch logs encrypted
-
----
-
 
 ---
 
