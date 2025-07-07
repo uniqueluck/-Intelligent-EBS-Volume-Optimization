@@ -175,6 +175,11 @@ Trigger your workflow daily at **6:00 AM IST**.
      
    - **SNS (Email Notification)**
       ![ebs_volume_converted_email](images/ebs_volume_converted_email.png)
+
+   - **Convert Volume gp2 to gp3**
+     
+![ebs_volume_converted_email](images/gp3.png)
+
    - **CloudWatch Logs**
     ![cloudwatch_log_gr](images/cloudwatch_log_group.png)
     ![cloudwatch_log_group](images/event_log.png)
