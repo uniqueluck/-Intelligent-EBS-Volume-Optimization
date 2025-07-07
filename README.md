@@ -28,7 +28,12 @@ Before starting, ensure you have:
 - ✅ An **AWS Account**
 - ✅ An **EC2 instance** running in your region
 - ✅ At least one **gp2 volume** attached to your EC2 (so Lambda can find and convert it)
-- ✅ AWS CLI configured (optional, for testing)  
+- ✅ AWS CLI configured (optional, for testing)
+
+  ## 🖥️ Architecture Diagram
+
+![Architecture Diagram](images/architecture.png)
+
 
 ## 🚀 Step-by-Step Guide
 
