@@ -181,7 +181,9 @@ Trigger your workflow daily at **6:00 AM IST**.
 ![ebs_volume_converted_email](images/gp3.png)
 
    - **CloudWatch Logs**
+
 ![cloudwatch_log_gr](images/cloudwatch_log_group.png)
+
 ![cloudwatch_log_group](images/event_log.png)
 
 
