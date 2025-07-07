@@ -173,7 +173,7 @@ Trigger your workflow daily at **6:00 AM IST**.
 
 ### ✅ Step 8: Test the Workflow
 1. Run a manual execution of the Step Function
-
+![Step](images/graph_step.png)
 ![Step Function Execution](images/step-function-execution.png)
 2. Observe logs in:
 
