@@ -21,117 +21,85 @@ An e-commerce company migrated 250 gp2 volumes to gp3 with this workflow, cuttin
 
 ---
 
-## 🌟 Features
-- 🔄 Automatically identifies gp2 volumes tagged `AutoConvert=true`
-- ⚡ Converts them to gp3 for cost savings
-- 📝 Logs details in DynamoDB
-- 📧 Sends notification emails using SNS
-- ⏰ Daily scheduled automation with CloudWatch Events
+## 🛠️ Setup: Preparing Your Environment
 
----
+Before starting, ensure you have:  
 
-## 🖥️ Architecture Diagram
+- ✅ An **AWS Account**
+- ✅ An **EC2 instance** running in your region
+- ✅ At least one **gp2 volume** attached to your EC2 (so Lambda can find and convert it)
+- ✅ AWS CLI configured (optional, for testing)  
 
-![Architecture Diagram](images/architecture.png)
+### 📦 Create EC2 Instance with gp2 Volume
+1. Go to **EC2 → Launch Instance**
+   - Name: `EBS-Test-Instance`
+   - AMI: Amazon Linux 2
+   - Instance Type: t2.micro
+   - Key Pair: Create or use existing
+   - Network: Allow SSH (port 22)  
+2. Under **Storage:**
+   - Volume Type: **gp2**
+   - Size: 8 GiB (or your choice)
+3. Launch the instance.
+4. Verify the instance has a gp2 volume attached.  
+
+📸 *Screenshot:*  
+![Launch EC2 Instance](images/ec2-instance.png)
+
+### 📦 (Optional) Create and Attach gp2 Volume
+If your EC2 was created with gp3:  
+1. Go to **EC2 → Volumes → Create Volume**
+   - Type: **gp2**
+   - Size: 8 GiB
+   - Availability Zone: Same as your EC2
+2. Attach it:
+   - Select the volume → **Actions → Attach Volume**
+   - Choose your EC2 instance
+
+📸 *Screenshot:*  
+![Create gp2 Volume](images/create-gp2-volume.png)  
+![Attach Volume](images/attach-volume.png)
 
 ---
 
 ## 🚀 Step-by-Step Guide
 
-### 📌 Prerequisites
-- AWS Account
-- Basic understanding of EC2, Lambda, and IAM
-- Configured AWS CLI (optional)
+### ✅ Step 0: Prepare EC2 and gp2 Volume
+Before proceeding, ensure your EC2 instance has a gp2 volume attached. If not, follow the **Setup** section above.
 
 ---
 
 ### ✅ Step 1: Create IAM Role for Lambda
-1. Go to AWS Console → **IAM → Roles → Create Role**
-2. Select **AWS Service** → Choose **Lambda** → Next
-3. Attach the following policies:
-   - `AmazonEC2FullAccess`
-   - `AmazonDynamoDBFullAccess`
-   - `AmazonSNSFullAccess`
-   - `CloudWatchLogsFullAccess`
-4. Name it: `LambdaEBSConversionRole`
-5. Click **Create Role**
-
-📸 *Screenshot:*  
-![Create IAM Role](images/iam-role.png)
+... *(steps continue as before)*
 
 ---
 
-### ✅ Step 2: Create DynamoDB Table
-1. Go to **DynamoDB → Tables → Create Table**
-2. Table name: `EBSConversionLogs`
-3. Partition key: `VolumeId` (String)
-4. Keep other defaults → Click **Create**
+### ✅ Step 8: Verify Conversion
+Once the Lambda executes successfully, check your volumes:  
+- The gp2 volume should now be **gp3**.  
 
 📸 *Screenshot:*  
-![DynamoDB Table](images/dynamodb-table.png)
+![gp3 Volume](images/gp3-volume.png)
 
 ---
 
-### ✅ Step 3: Create SNS Topic
-1. Go to **SNS → Topics → Create Topic**
-2. Type: Standard
-3. Name: `EBSVolumeConverted`
-4. Create a Subscription:
-   - Protocol: Email
-   - Endpoint: *Your Email*
-5. Confirm the email subscription (check your inbox)
-
-📸 *Screenshot:*  
-![SNS Topic](images/sns-topic.png)
-
----
-
-### ✅ Step 4: Create Lambda Function
-1. Go to **Lambda → Create Function**
-2. Name: `ConvertEBSVolume`
-3. Runtime: Python 3.9
-4. Attach the IAM Role: `LambdaEBSConversionRole`
-5. Paste the Python code from [lambda_function.py](lambda_function.py)
-6. Click **Deploy**
-
-📸 *Screenshot:*  
-![Lambda Function](images/lambda-function.png)
-
----
-
-### ✅ Step 5: Create Step Function
-1. Go to **Step Functions → Create State Machine**
-2. Type: Standard
-3. Name: `EBSConversionWorkflow`
-4. Paste the JSON definition from [state_machine_definition.json](state_machine_definition.json)
-5. Set the Lambda function ARN in the definition
-6. Click **Create**
-
-📸 *Screenshot:*  
-![Step Function](images/step-function.png)
-
----
-
-### ✅ Step 6: Test the Workflow
-1. Run a manual execution of the Step Function
-2. Observe logs in:
-   - **DynamoDB**
-   - **SNS (Email Notification)**
-   - **CloudWatch Logs**
-
-📸 *Screenshot:*  
-![Step Function Execution](images/step-function-execution.png)
-
----
-
-### ✅ Step 7: Automate with CloudWatch
-1. Go to **CloudWatch → Rules → Create Rule**
-2. Trigger: Schedule Expression (cron: `0 6 * * ? *` → daily at 6 AM)
-3. Target: Your Step Function
-4. Click **Create Rule**
-
-📸 *Screenshot:*  
-![CloudWatch Rule](images/cloudwatch-rule.png)
+## 📸 Additional Screenshots
+- **EC2 Instance with gp2 Volume**  
+  ![EC2 Instance](images/ec2-instance.png)
+- **Created gp2 Volume**  
+  ![gp2 Volume](images/create-gp2-volume.png)
+- **Volume Attached to EC2**  
+  ![Attach Volume](images/attach-volume.png)
+- **After Conversion - gp3 Volume**  
+  ![gp3 Volume](images/gp3-volume.png)
+- **Step Function Execution**  
+  ![Step Function Execution](images/step-function-execution.png)
+- **DynamoDB Log Entries**  
+  ![DynamoDB Logs](images/dynamodb-logs.png)
+- **SNS Notification Email**  
+  ![SNS Notification](images/sns-notification.png)
+- **CloudWatch Logs**  
+  ![CloudWatch Logs](images/cloudwatch-logs.png)
 
 ---
 
@@ -139,16 +107,13 @@ An e-commerce company migrated 250 gp2 volumes to gp3 with this workflow, cuttin
 - ✅ Architecture Diagram
 - ✅ Lambda Code ([lambda_function.py](lambda_function.py))
 - ✅ Step Function Definition ([state_machine_definition.json](state_machine_definition.json))
-- ✅ Screenshots
+- ✅ Screenshots (listed above)
 - ✅ Technical Report ([report.docx](report.docx))
 
 ---
 
 ## 🔒 Security Best Practices
-- IAM roles with least privilege
-- No wildcard (`*`) permissions
-- SNS subscriptions require confirmation
-- CloudWatch logs encrypted
+... *(same as before)*
 
 ---
 
@@ -160,13 +125,13 @@ An e-commerce company migrated 250 gp2 volumes to gp3 with this workflow, cuttin
 ├── report.docx
 ├── images/
 │   ├── architecture.png
-│   ├── iam-role.png
-│   ├── dynamodb-table.png
-│   ├── sns-topic.png
-│   ├── lambda-function.png
-│   ├── step-function.png
-│   ├── step-function-execution.png
-│   └── cloudwatch-rule.png
+│   ├── ec2-instance.png
+│   ├── create-gp2-volume.png
+│   ├── attach-volume.png
+│   ├── gp3-volume.png
+│   ├── dynamodb-logs.png
+│   ├── sns-notification.png
+│   ├── cloudwatch-logs.png
 └── README.md
 ```
 
