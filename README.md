@@ -1,5 +1,11 @@
 
-# 📦 Intelligent EBS Volume Optimization (AWS Lambda + Step Functions)
+# 📦 Intelligent EBS Volume Optimization Using Lambda, CloudWatch, SNS, DynamoDB & Step Functions
+
+🏆 **Objective**
+Build a serverless automation pipeline that intelligently monitors EBS volumes,
+identifies gp2 volumes, and converts them to gp3, with full logging, alerting, and audit
+trail. This project reinforces knowledge of event-driven architecture, monitoring,
+notifications, data logging, and state orchestration.
 
 📢 **Why & Where to Use This Project?**
 
